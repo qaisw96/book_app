@@ -1,0 +1,69 @@
+@import "reset.css";
+@import "layout.css";
+@import "modules.css";
+
+
+
+
+body {
+    width: 500px;
+    height: 100vh;
+    background-color: rgb(204, 189, 189);
+    font-family: 'Indie Flower', cursive;
+    text-align: center;
+}
+
+
+#new-page, #show-page {
+    width: 480px;
+    height: 100vh;
+    margin-top: 32px;
+}
+
+#best-books {
+    padding: 20px;
+    background-color: black;
+    color: blanchedalmond;
+}
+
+#sub-header {
+    padding: 12px;
+    background-color: rgb(102, 100, 100);
+    text-align: center;
+    color: blanchedalmond;
+}
+
+#first-input {
+    padding: 10px;    
+    
+}
+#form, div {
+    text-align: center;
+}
+
+
+
+.formPart {
+    padding: 10px;    
+    width: 180px;
+    background-color: cornflowerblue;
+    margin: 4% auto 4% ;
+}
+
+/* div {
+} */
+
+
+
+
+#bookItem {
+    width: 300px;
+    padding: 20px;
+    margin-bottom: 23px;
+    background-color: rgb(181, 194, 218);
+    box-shadow: 3px 5px #dbcbcb;
+
+  
+} 
+
+
