@@ -1,0 +1,18 @@
+#new-page, #show-page {
+    width: 480px;
+    height: 100vh;
+    margin-top: 32px;
+}
+
+
+#show-page {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:  center;
+    
+}
+
+p {
+    font-size: small;
+    padding: 20px;
+}
