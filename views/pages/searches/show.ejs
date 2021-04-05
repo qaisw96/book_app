@@ -15,8 +15,8 @@
         <main id="show-page">
             <% searchResults.forEach(element => { %>
                 <div id="bookItem">
-                        <img src='https://i.imgur.com/J5LVHEL.jpg' alt="">
-                        <h2><%= element.title   %></h2>
+                    <img src="<%= element.thumbnail %>" alt="">
+                    <h2><%= element.title   %></h2>
                         <h2><%= element.author   %></h2>
                         <p><%=  element.description %></p>
                 
