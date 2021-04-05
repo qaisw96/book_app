@@ -69,7 +69,7 @@ function Book(book) {
     this.title = book.title;
     this.author = book.authors;
     this.description = book.description;
-    // this.smallThumbnail = book.imageLinks.smallThumbnail || `https://i.imgur.com/J5LVHEL.jpg`;      
+    this.thumbnail = book.imageLinks.thumbnail || `https://i.imgur.com/J5LVHEL.jpg`;      
 
 }
 
