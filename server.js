@@ -66,9 +66,9 @@ function showBooks(req, res) {
 
 function Book(book) {
     
-    this.title = book.title;
-    this.author = book.authors;
-    this.description = book.description;
+    this.title = book.title ? book.title : `No title exist`;
+    this.author = book.authors ? book.authors[0] : `There is no author`
+    this.description = book.description ? book.description : `There is no decribtion`;
     this.thumbnail = book.imageLinks.thumbnail || `https://i.imgur.com/J5LVHEL.jpg`;      
 
 }
