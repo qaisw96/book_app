@@ -1,2 +1,27 @@
-<link rel="stylesheet" href="../../puplic/styles/base.css">
-<h1>Hello World</h1>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('.././layout/head.ejs') %>
+
+<body>
+    <%- include('.././layout/header.ejs') %>
+  
+    <h2 id="totol-books">Total of Books <%= results.length %></h2>
+    <main id="show-page">
+
+        <% results.forEach(element => { %>
+          <div id="bookItem">
+            <img src="<%= element.image_url %>" alt="">
+            <h2><%= element.title   %></h2>
+            <h3><%= element.auther  %></h3>
+            <h2>
+                <a href="/books/<%= element.id %>" target="_blank" rel="link">View Details</a>
+            </h2>
+          </div>
+        <% }) %>
+
+    </main>
+    
+</body>
+</html>

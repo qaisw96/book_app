@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('../../layout/head.ejs') %>
+
+<body>
+    <%- include('../../layout/header.ejs') %>
+
+    <a href="/"></a>
+    <main id="show-page">
+        <% result.forEach(element => { %>
+            <div id="bookItem">
+            <img src="<%= element.image_url %>" alt="">
+            <h2><%= element.title   %></h2>
+            <h3><%= element.auther  %></h3>
+            <h3><%= element.isbn  %></h3>
+            <p><%= element.description  %></p>
+        </div>
+        <% }) %>
+
+    </main>
+    
+</body>
+</html>

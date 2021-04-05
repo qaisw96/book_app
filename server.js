@@ -4,6 +4,7 @@ require('dotenv').config();
 // Extract packages 
 const express = require('express')
 const superagent = require('superagent')
+const pg = require('pg')
 // const express = require('express')
 
 
@@ -11,6 +12,26 @@ const app = express()
 
 // set variables from .env
 const PORT = process.env.PORT
+const DATABASE_URL = process.env.DATABASE_URL
+const ENV = process.env.ENV || "DEP"
+
+
+// let client = '';
+// if (ENV === 'DEP') {
+//   client = new pg.Client({
+//     connectionString: DATABASE_URL,
+//     ssl: {
+//       rejectUnauthorized: false
+//     }
+//   });
+// } else {
+//   client = new pg.Client({
+//     connectionString: DATABASE_URL,
+//   });
+// }
+
+const client = new pg.Client(DATABASE_URL)
+
 
 // Application Middleware
 app.use(express.urlencoded());
@@ -20,16 +41,55 @@ app.use(express.static('./public'))
 app.set('view engine', 'ejs');
 
 // Just to test
-app.get('/test', (req, res) => {
-    res.render('pages/index');
-})
 
 
-
+app.get('/', renderHomePageFromDb)
+app.get('/books/:id', getOneBook)
+app.post('/books', selectAndSaveBook)
 
 
 app.get('/searches/new', displayForm)
+
 app.post('/searches', showBooks)
+
+// app.post('/searches', selectAndSaveBook)
+
+
+function renderHomePageFromDb(req, res) {
+    const sqlQuery = `SELECT * FROM books;`
+
+    client.query(sqlQuery).then(result => {
+        
+        res.render('pages/index', { results: result.rows})
+
+    }).catch(error => {
+        handleError(error, res)
+    })
+}
+
+function getOneBook(req, res) {
+    const taskId =  req.params.id;
+
+    const sqlQueryById = `SELECT * FROM books WHERE id=$1`
+    const safeValues = [taskId]
+
+    client.query(sqlQueryById, safeValues).then(results => {
+        res.render('pages/books/detail.ejs', {result : results.rows})
+    })
+
+}
+
+function selectAndSaveBook(req, res) {
+    const book = req.body.book.split(",")
+    // console.log(book)
+    const inserData = `INSERT INTO books (auther, title, isbn, image_url, description) VALUES($1, $2, $3, $4, $5);`
+    const safeValues = [book[0], book[1], book[2], book[3], book[4]]
+
+    client.query(inserData, safeValues).then(() => {
+        res.redirect('/')
+    })
+
+}
 
 function displayForm(req, res) {
     
@@ -57,7 +117,7 @@ function showBooks(req, res) {
     }).then(results => {
         res.render('pages/searches/show',{ searchResults: results })
     }).catch((error) => {    
-        res.status(500).render('pages/error');  
+        handleError(error, res);  
     });
 }
 
@@ -66,20 +126,28 @@ function showBooks(req, res) {
 
 function Book(book) {
     
-    this.title = book.title;
-    this.author = book.authors;
-    this.description = book.description;
-    this.thumbnail = book.imageLinks.thumbnail || `https://i.imgur.com/J5LVHEL.jpg`;      
+    this.title = book.title ? book.title : `No title exist`;
+    this.author = book.authors ? book.authors[0] : `There is no author`
+    this.description = book.description ? book.description : `There is no decribtion`;
+    this.thumbnail = book.imageLinks.thumbnail || `https://i.imgur.com/J5LVHEL.jpg`;
+    this.isbn = book.industryIdentifiers ? `ISBN_13 ${book.industryIdentifiers[0].identifier}` : 'No ISBN available';
+      
 
 }
 
 
 
-
+function handleError(error, res) {
+    res.render('pages/error', { error: error });
+  }
+    
 
 // Start Web server
-app.listen(PORT, () => {
-   console.log(`listening to PORT ${PORT}....`);
+client.connect().then(() => {
+    app.listen(PORT, () => {
+       console.log(`listening to PORT ${PORT}....`);
+       console.log(`Connected DATABASE`);
+    })
 })
 
 // To test the connection 
