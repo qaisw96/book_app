@@ -20,3 +20,25 @@ p {
 #totol-books {
     margin-top: 20px;
 }
+
+#show {
+    margin-top: 50px;
+}
+
+#deleteBot, #updateBot {
+    padding: 15px;
+    width: 150px;
+}
+
+#updateBot {
+     margin-top: 20px;
+}
+
+.update-input {
+    width: 150px;
+    margin-bottom: 10px;
+}
+
+#decription {
+    height: 60px;
+}
