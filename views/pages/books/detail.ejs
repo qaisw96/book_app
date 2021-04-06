@@ -15,10 +15,33 @@
             <h3><%= element.auther  %></h3>
             <h3><%= element.isbn  %></h3>
             <p><%= element.description  %></p>
+            
+            <form action="/books/delete/<%=element.id%>?_method=DELETE" method="POST">
+                <input type="submit" value="Delete book" id="deleteBot">
+            </form>
+            
+            <input type="submit"  value="Update book" onclick="showBottom()" id="updateBot" >
+            <form action="/books/update/<%= element.id %>?_method=PUT" method="POST"  id="show" style="display: none;">
+
+                Title :
+                <input type="text" name="title" value="<%= element.title   %>" class="update-input"> <br>
+                Author :
+                <input type="text" name="auther" value="<%= element.auther   %>" class="update-input"> <br>
+                Isbn :
+                <input type="text" name="isbn" value="<%= element.isbn   %>" class="update-input"> <br>
+                image_url :
+                <input type="text" name="img" value="<%= element.image_url   %>" class="update-input"> <br>
+                
+                Description :
+                <input type="text" name="description" value="<%= element.description%>" size="50" class="update-input" id="decription">
+                
+                <input type="submit" value="edit" > <br>
+            </form>
         </div>
         <% }) %>
 
     </main>
+    <script src="/js/app.js"></script>
     
 </body>
 </html>

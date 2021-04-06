@@ -5,6 +5,7 @@ require('dotenv').config();
 const express = require('express')
 const superagent = require('superagent')
 const pg = require('pg')
+const methodOverride = require('method-override')
 // const express = require('express')
 
 
@@ -16,31 +17,33 @@ const DATABASE_URL = process.env.DATABASE_URL
 const ENV = process.env.ENV || "DEP"
 
 
-// let client = '';
-// if (ENV === 'DEP') {
-//   client = new pg.Client({
-//     connectionString: DATABASE_URL,
-//     ssl: {
-//       rejectUnauthorized: false
-//     }
-//   });
-// } else {
-//   client = new pg.Client({
-//     connectionString: DATABASE_URL,
-//   });
-// }
+let client = '';
+if (ENV === 'DEP') {
+  client = new pg.Client({
+    connectionString: DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+} else {
+  client = new pg.Client({
+    connectionString: DATABASE_URL,
+  });
+}
 
-const client = new pg.Client(DATABASE_URL)
+// const client = new pg.Client(DATABASE_URL)
 
 
 // Application Middleware
 app.use(express.urlencoded());
 // to serve Css files static
 app.use(express.static('./public'))
+// define method-override reference
+app.use(methodOverride('_method'));
+
 // Set the view engine for server-side templating
 app.set('view engine', 'ejs');
 
-// Just to test
 
 
 app.get('/', renderHomePageFromDb)
@@ -52,16 +55,19 @@ app.get('/searches/new', displayForm)
 
 app.post('/searches', showBooks)
 
-// app.post('/searches', selectAndSaveBook)
+app.post('/searches', selectAndSaveBook)
+
+app.put('/books/update/:book_id', updateUserInput)
+app.delete('/books/delete/:book_id', deleteUserInput)
 
 
 function renderHomePageFromDb(req, res) {
     const sqlQuery = `SELECT * FROM books;`
-
+    
     client.query(sqlQuery).then(result => {
         
         res.render('pages/index', { results: result.rows})
-
+        
     }).catch(error => {
         handleError(error, res)
     })
@@ -69,26 +75,26 @@ function renderHomePageFromDb(req, res) {
 
 function getOneBook(req, res) {
     const taskId =  req.params.id;
-
+    
     const sqlQueryById = `SELECT * FROM books WHERE id=$1`
     const safeValues = [taskId]
-
+    
     client.query(sqlQueryById, safeValues).then(results => {
         res.render('pages/books/detail.ejs', {result : results.rows})
     })
-
+    
 }
 
 function selectAndSaveBook(req, res) {
     const book = req.body.book.split(",")
     // console.log(book)
-    const inserData = `INSERT INTO books (auther, title, isbn, image_url, description) VALUES($1, $2, $3, $4, $5);`
+    const inserData = `INSERT INTO books (auther, title, isbn, image_url, description) VALUES($1, $2, $3, $4, $5) RETURNING id;`
     const safeValues = [book[0], book[1], book[2], book[3], book[4]]
-
-    client.query(inserData, safeValues).then(() => {
-        res.redirect('/')
+    
+    client.query(inserData, safeValues).then((result) => {
+        res.redirect(`/books/${result.rows[0].id}`)
     })
-
+    
 }
 
 function displayForm(req, res) {
@@ -99,18 +105,18 @@ function displayForm(req, res) {
 
 function showBooks(req, res) {
     let urlBooks = `https://www.googleapis.com/books/v1/volumes`
-
+    
     const searchBy = req.body.searchBy
     const searchByVl = req.body.search
-
+    
     const queryObj = {}
     if(searchBy === 'title') {
         queryObj['q'] = `+intitle:${searchByVl}`
-     
+        
     }else if(searchBy === 'author') {
         queryObj['q'] = `+inauthor:${searchByVl}`
     }
-
+    
     superagent.get(urlBooks).query(queryObj).then(apiRes => {
         return apiRes.body.items.map(book => new Book(book.volumeInfo))
         
@@ -122,7 +128,33 @@ function showBooks(req, res) {
 }
 
 
+function updateUserInput(req, res) {
+    const bookId = req.params.book_id
+    const {title, auther, isbn, img, description} = req.body
 
+    const updateQuery = `UPDATE books SET auther=$1, title=$2, isbn=$3, image_url=$4, description=$5 WHERE id=$6;`
+    const safeValues = [auther, title, isbn, img, description, bookId]
+
+    client.query(updateQuery, safeValues).then(result => {
+        res.redirect(`/books/${bookId}`)
+    }).catch(error => {
+
+        handleError(error, res);  
+    })
+}
+
+function deleteUserInput(req, res) {
+    const bookId = req.params.book_id
+
+    const safeValues = [bookId]
+    const deleteQuery = `DELETE FROM books WHERE id=$1;`
+
+    client.query(deleteQuery, safeValues).then(() => {
+        res.redirect(`/`)
+    }).catch(error => {
+        handleError(error, res)
+    })
+}
 
 function Book(book) {
     

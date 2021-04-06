@@ -17,17 +17,40 @@ body {
 #new-page, #show-page {
     width: 480px;
     height: 100vh;
-    margin-top: 32px;
+    margin-top: 70px;
 }
 
-#best-books {
-    padding: 20px;
+#header {
+    display: flex;
+    padding: 22px;
     background-color: black;
     color: blanchedalmond;
 }
 
+#header h1 {
+    font-weight: bold;
+    font-size: large;
+}
+nav {
+    margin-left: 165px;
+}
+nav ul {
+    display: flex;
+}
+
+nav ul li {
+    padding: 10px;
+    
+}
+
+nav ul li a{
+    font-size: medium;
+     text-decoration: none;
+     color: cornsilk;
+}
+
 #sub-header {
-    padding: 12px;
+    padding: 18px;
     background-color: rgb(102, 100, 100);
     text-align: center;
     color: blanchedalmond;
@@ -50,11 +73,6 @@ body {
     margin: 4% auto 4% ;
 }
 
-/* div {
-} */
-
-
-
 
 #bookItem {
     width: 300px;
@@ -66,4 +84,10 @@ body {
   
 } 
 
+#add-book {
+    padding: 15px;
+}
 
+#add-book:hover {
+    background-color: rgb(66, 121, 240);
+}
