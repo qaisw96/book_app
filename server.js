@@ -16,21 +16,21 @@ const DATABASE_URL = process.env.DATABASE_URL
 const ENV = process.env.ENV || "DEP"
 
 
-// let client = '';
-// if (ENV === 'DEP') {
-//   client = new pg.Client({
-//     connectionString: DATABASE_URL,
-//     ssl: {
-//       rejectUnauthorized: false
-//     }
-//   });
-// } else {
-//   client = new pg.Client({
-//     connectionString: DATABASE_URL,
-//   });
-// }
+let client = '';
+if (ENV === 'DEP') {
+  client = new pg.Client({
+    connectionString: DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+} else {
+  client = new pg.Client({
+    connectionString: DATABASE_URL,
+  });
+}
 
-const client = new pg.Client(DATABASE_URL)
+// const client = new pg.Client(DATABASE_URL)
 
 
 // Application Middleware
@@ -40,7 +40,6 @@ app.use(express.static('./public'))
 // Set the view engine for server-side templating
 app.set('view engine', 'ejs');
 
-// Just to test
 
 
 app.get('/', renderHomePageFromDb)
@@ -82,11 +81,11 @@ function getOneBook(req, res) {
 function selectAndSaveBook(req, res) {
     const book = req.body.book.split(",")
     // console.log(book)
-    const inserData = `INSERT INTO books (auther, title, isbn, image_url, description) VALUES($1, $2, $3, $4, $5);`
+    const inserData = `INSERT INTO books (auther, title, isbn, image_url, description) VALUES($1, $2, $3, $4, $5) RETURNING id;`
     const safeValues = [book[0], book[1], book[2], book[3], book[4]]
 
-    client.query(inserData, safeValues).then(() => {
-        res.redirect('/')
+    client.query(inserData, safeValues).then((result) => {
+        res.redirect(`/books/${result.rows[0].id}`)
     })
 
 }
